@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils.translation import ugettext_lazy
+
 from django.contrib.auth.models import User
 from django.contrib.auth.signals import user_logged_in
 from django.contrib.auth.signals import user_logged_out
@@ -10,15 +12,16 @@ LOGOUT_ACTION = 'O'
 FAIL_ACTION = 'F'
 
 ACTION_TYPES = (
-    (LOGIN_ACTION, 'Login'),
-    (LOGOUT_ACTION, 'Logout'),
-    (FAIL_ACTION, 'Fail'),
+    (LOGIN_ACTION, ugettext_lazy('Login')),
+    (LOGOUT_ACTION, ugettext_lazy('Logout')),
+    (FAIL_ACTION, ugettext_lazy('Fail')),
 )
 
 
 class UserAuthAction(models.Model):
 
     action_type = models.CharField(
+        ugettext_lazy("Action Type"),
         max_length=1,
         choices=ACTION_TYPES
     )
@@ -29,9 +32,19 @@ class UserAuthAction(models.Model):
         blank=True
     )
 
-    created = models.DateTimeField(
+    performed = models.DateTimeField(
+        ugettext_lazy("Performed"),
         auto_now_add=True
     )
+
+    notes = models.TextField(
+        ugettext_lazy("Notes"),
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = ugettext_lazy("Action")
+        verbose_name_plural = ugettext_lazy("Actions")
 
 
 def user_in(sender, user, request, **kwargs):
